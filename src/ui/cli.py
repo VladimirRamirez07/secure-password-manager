@@ -160,8 +160,17 @@ class CLI:
             console.print("[green]✓ Entry deleted.[/green]")
 
     def _generate_password(self) -> None:
-        length = int(Prompt.ask("Length", default="16"))
-        pwd    = self.gen.generate(length=length)
+        try:
+            length = int(Prompt.ask("Length", default="16"))
+        except ValueError:
+            console.print("[red]Please enter a valid number.[/red]")
+            return
+
+        if length < 8:
+            console.print("[red]Minimum length is 8.[/red]")
+            return
+
+        pwd = self.gen.generate(length=length)
         strength = self.gen.evaluate_strength(pwd)
         console.print(f"\n[bold green]{pwd}[/bold green]")
         console.print(f"[dim]Strength: {strength['label']} ({strength['score']}/100)[/dim]")
